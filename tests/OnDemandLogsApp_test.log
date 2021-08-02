@@ -1,0 +1,6 @@
+update-alternatives 2021-05-02 11:54:58: run with --quiet --install /lib/cpp cpp /usr/bin/cpp 10
+update-alternatives 2021-05-02 11:54:58: link group cpp updated to point to /usr/bin/cpp
+update-alternatives 2021-05-02 11:54:58: run with --quiet --install /usr/bin/cc cc /usr/bin/gcc 20 --slave /usr/share/man/man1/cc.1.gz cc.1.gz /usr/share/man/man1/gcc.1.gz
+update-alternatives 2021-05-02 11:54:58: link group cc updated to point to /usr/bin/gcc
+update-alternatives 2021-05-02 11:54:58: run with --quiet --install /usr/bin/c89 c89 /usr/bin/c89-gcc 20 --slave /usr/share/man/man1/c89.1.gz c89.1.gz /usr/share/man/man1/c89-gcc.1.gz
+update-alternatives 2021-05-02 11:54:58: link group c89 updated to point to /usr/bin/c89-gcc
