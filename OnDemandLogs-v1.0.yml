@@ -59,8 +59,6 @@ components:
       items:
         type: object
         properties:
-          time:
-            type: integer
           raw:
             type: string
     Error:
