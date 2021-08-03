@@ -3,13 +3,14 @@ const fs = require('fs/promises');
 
 /**
  * Design Assumptions:
- *   1. Any requested log file will already be sorted with the newest log at the end of the file and oldest at beginning.
- *      - This prevents the need to extract a valid timestamp from queried logs
+ *   1. Log files with a timestamp format matching [20/May/2015:21:05:01 +0000] will be sorted.
+ *   2. Log files without a timestamp or a different format will use the event ordering of the file
+ *        and assume that the last event in the file is the newest.
  *   2. Each line in the log represents a single "event".
  */
 
 /**
- * Reads the the provided file and extracts events.
+ * Reads the provided file and extracts events.
  * @param {string} filePath The full path of the log file to read.
  * @param {integer} count The maximum number of events to return.
  * @param {string} filter Keyword to match and return events for.
@@ -21,8 +22,6 @@ async function parseLog(
     count,
     filter
 ) {
-    let events = [];
-
     const fileContents = await fs.readFile(filePath, "utf8");
     const lines = fileContents.split(/[\r\n]/);
 
@@ -31,19 +30,40 @@ async function parseLog(
         count = lines.length;
     }
 
-    // Start from the tail/end of the file to order events from newest to oldest
+    // Extract timestamps and data from the file contents.
+    let events = [];
+    let validTimestamps = true;
+    for (let i = 0; i < lines.length; ++i) {
+        const event = new Event(lines[i]);
+        if (Number.isNaN(event.msSinceEpoch)) {
+            validTimestamps = false;
+        }
+
+        events.push(event);
+    }
+
+    // Sort the events chronologically if timestamp data can be used. Otherwise,
+    // leave in the order obtained from the file.
+    if (validTimestamps) {
+        events.sort((first, second) => first.msSinceEpoch - second.msSinceEpoch);
+    }
+
+    // Start from the tail/end of the sorted events list and build return list, 
+    // respecting the count and filter props.
+    let returnEvents = [];
     let i = lines.length - 1;
-    while (events.length < count && i >= 0) {
+    const regex = new RegExp(filter);
+    while (returnEvents.length < count && i >= 0) {
         if (filter) {
-            lines[i].match(filter) && events.push(new Event(lines[i]));
+            regex.test(events[i].raw) && returnEvents.push(events[i]);
         } else {
-            events.push(new Event(lines[i]));
+            returnEvents.push(events[i]);
         }
 
         --i;
     }
 
-    return events;
+    return returnEvents;
 }
 
 module.exports = { parseLog };

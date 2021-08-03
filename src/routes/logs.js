@@ -20,6 +20,12 @@ router.get('/logs/:filename', async function (req, res) {
         } catch (err) {
             return res.status(400).json({ code: err.code, message: err.message });
         }
+
+        try {
+            new RegExp(filter)
+        } catch (err) {
+            return res.status(400).json({ code: 'EINVAL', message: 'filter must be a valid regular expression' });
+        }
     }
 
     // filename is required on the path

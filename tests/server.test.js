@@ -5,7 +5,7 @@ const { existsSync } = require('fs');
 const testFileName = 'OnDemandLogsApp_test.log';
 const testFilePath = `/var/log/${testFileName}`;
 
-describe('GET /logs', () => {
+describe('GET /logs/{filename}', () => {
     beforeAll(() => {
         // Ensure the filename exists.
         if (!existsSync(testFilePath)) {
@@ -76,12 +76,12 @@ describe('GET /logs', () => {
     test('return filtered events', async () => {
         // Test valid values
         await supertest(app)
-            .get(`/logs/${testFileName}?filter=get`)
+            .get(`/logs/${testFileName}?filter=GET`)
             .expect(200)
             .then((response) => {
                 expect(response.body.events);
                 response.body.events.forEach((event) => {
-                    expect(event.raw).toMatch('get')
+                    expect(event.raw).toMatch('GET')
                 })
             })
 
@@ -95,17 +95,26 @@ describe('GET /logs', () => {
                     expect(event.raw).toMatch('')
                 })
             })
+
+        // Test invalid values
+        await supertest(app)
+            .get(`/logs/${testFileName}?filter=*`)
+            .expect(400)
+            .then((response) => {
+                expect(response.body.code).toBe('EINVAL');
+                expect(response.body.message);
+            })
     });
 
     test('return n filtered events', async () => {
         // Test valid values
         await supertest(app)
-            .get(`/logs/${testFileName}?count=1&filter=get`)
+            .get(`/logs/${testFileName}?count=1&filter=GET`)
             .expect(200)
             .then((response) => {
                 expect(response.body.events);
                 expect(response.body.events.length).toBe(1);
-                expect(response.body.events[0].raw).toMatch('get');
+                expect(response.body.events[0].raw).toMatch('GET');
             })
 
         // Test unexpected values
@@ -124,6 +133,19 @@ describe('GET /logs', () => {
             .then((response) => {
                 expect(response.body.events);
                 expect(response.body.events.length).toBe(0);
+            })
+    });
+
+    test('reverse chronological order', async () => {
+        await supertest(app)
+            .get(`/logs/${testFileName}?count=10000`)
+            .expect(200)
+            .then((response) => {
+                expect(response.body.events);
+                // These tests are fully dependent on the test log data.
+                expect(response.body.events.length).toBe(10000);
+                expect(response.body.events[0].raw).toMatch('[20/May/2015:21:05:59 +0000]');
+                expect(response.body.events[9999].raw).toMatch('[17/May/2015:10:05:00 +0000]');
             })
     });
 });
