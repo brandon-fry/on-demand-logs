@@ -24,7 +24,7 @@ class Event {
         // Date.parse() will not work for the timestamp format of the expected log files.
         // Extract out the date and time groups and manually set them.
         const ts = this.raw.match(/\[(\d*\/.*\/\d{4}):(\d{2}:\d{2}:\d{2} .*)\]/);
-        if (ts.length > 2) {
+        if (ts && ts.length > 2) {
             // This will return 'NaN' if the date could not be parsed.
             return Date.parse(`${ts[1]} ${ts[2]}`);
         }

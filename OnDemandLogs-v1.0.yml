@@ -3,7 +3,7 @@ info:
   title: On Demand Logs
   version: '1.0'
 servers:
-  - url: https://localhost/
+  - url: https://localhost:3000/
 paths:
   /logs/{filename}:
     get:

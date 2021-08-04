@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+    <script type="text/javascript">
+        function fetchResults() {
+            // Clear any previous values
+            document.getElementById('error_code').innerHTML = "";
+            document.getElementById('error_message').innerHTML = "";
+            document.getElementById('resultTable').innerHTML = "";
+            document.getElementById('path').innerHTML = "";
+
+            // Build path from inputs
+            let path = `http://localhost:3000/logs/${document.getElementById('file').value}`
+            const count = document.getElementById('count').value;
+            const filter = document.getElementById('filter').value;
+            if (count && filter) {
+                path += `?count=${count}&filter=${filter}`
+            } else if (count) {
+                path += `?count=${count}`
+            } else if (filter) {
+                path += `?filter=${filter}`
+            }
+            
+            document.getElementById('path').innerHTML = path;
+
+            // Request and set data
+            fetch(path)
+                .then(response => {
+                    return response.json()
+                })
+                .then(result => {
+                    if (!result.events) {
+                        document.getElementById('error_code').innerHTML = result.code
+                        document.getElementById('error_message').innerHTML = result.message
+                    } else {
+                        document.getElementById('resultTable').innerHTML = result.events.map(event => `<tr><td>${event.raw}</td></tr>`).join(' ')
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('error_message').innerHTML = 'Request Failed';
+                });
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <h1>/logs/{filename} Endpoint Test</h1>
+
+        <div id="endpoint_form">
+            <div>
+                <label for="file">filename</label>
+                <input id="file" value="">
+            </div>
+            <div>
+                <label for="count">count</label>
+                <input id="count" value="">
+            </div>
+            <div>
+                <label for="filter">filter</label>
+                <input id="filter" value="">
+            </div>
+            <div>
+                <input type="submit" onclick="fetchResults()">
+            </div>
+        </div>
+    </div>
+
+    <p id="results"></p>
+
+    <div>
+        Endpoint path:
+        <h3 style="display: inline" id="path"></h3>
+    </div>
+
+    <div>
+        Error Code:
+        <h3 style="display: inline" id="error_code"></h3>
+    </div>
+
+    <div>
+        Error Message:
+        <h3 style="display: inline" id="error_message"></h3>
+    </div>
+    
+    </br>
+
+    <div>
+        Results:
+        <table id="resultTable"></table>
+    </div>
+</body>
+</html>
