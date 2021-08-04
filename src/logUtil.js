@@ -1,12 +1,17 @@
 const Event = require('./Event');
 const fs = require('fs/promises');
 
-/**
+/** 
  * Design Assumptions:
  *   1. Log files with a timestamp format matching [20/May/2015:21:05:01 +0000] will be sorted.
  *   2. Log files without a timestamp or a different format will use the event ordering of the file
  *        and assume that the last event in the file is the newest.
- *   2. Each line in the log represents a single "event".
+ *   3. Each line in the log represents a single "event".
+ *   4. Files will be UTF-8 encoded.
+ * 
+ * Limitations:
+ *   1. Since the entire file is read into memory. The size of the log file that can be read is limited
+ *        by the system's memory.
  */
 
 /**

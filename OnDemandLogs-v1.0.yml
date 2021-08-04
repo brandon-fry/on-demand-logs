@@ -25,7 +25,7 @@ paths:
           schema:
             type: string
           required: false
-          description: Get events that match the provided text/keyword
+          description: Regular expression pattern to get matched events for
       responses:
         '200':
           description: A list of events ordered newest to oldest
