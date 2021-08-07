@@ -3,8 +3,8 @@ const router = express.Router();
 const { parseLog } = require('../logUtil');
 
 router.get('/logs/:filename', async function (req, res) {
-    // count is optional
-    let count;
+    // count is optional. Defaults to 10.
+    let count = 10;
     if (req.query.count != null) {
         count = parseInt(req.query.count);
         if (Number.isNaN(count) || count < 0) {

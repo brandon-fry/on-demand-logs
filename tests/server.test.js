@@ -7,7 +7,7 @@ const testFilePath = `/var/log/${testFileName}`;
 
 describe('GET /logs/{filename}', () => {
     beforeAll(() => {
-        // Ensure the filename exists.
+        // Ensure the test log file exists.
         if (!existsSync(testFilePath)) {
             throw new Error(`${testFilePath} does not exist!`)
         }
@@ -42,18 +42,18 @@ describe('GET /logs/{filename}', () => {
                 expect(response.body.events.length).toBe(0);
             })
         await supertest(app)
-            .get(`/logs/${testFileName}?count=1`)
+            .get(`/logs/${testFileName}?count=10`)
             .expect(200)
             .then((response) => {
                 expect(response.body.events);
-                expect(response.body.events.length).toBe(1);
+                expect(response.body.events.length).toBe(10);
             })
         await supertest(app)
             .get(`/logs/${testFileName}?count=1000`)
             .expect(200)
             .then((response) => {
                 expect(response.body.events);
-                expect(response.body.events.length).toBeGreaterThan(1);
+                expect(response.body.events.length).toBe(1000);
             })
 
         // Test invalid values

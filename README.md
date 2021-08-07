@@ -1,5 +1,12 @@
 # On Demand Logs
 
+## Setup
+
+```bash
+$ npm ci
+$ npm run start
+```
+
 ## Usage
 
 To get all log events for a specific file at /var/log:<br />
@@ -16,7 +23,7 @@ GET http://localhost:3000/logs/sample.log?count=100
 Start the demo server
 
 ```bash
-npm run start
+$ npm run start
 ```
 
 Go to http://localhost:3000/ in a browser.
@@ -35,11 +42,12 @@ Before running tests, copy tests/OnDemandLogsApp_test.log to /var/log/OnDemandLo
 #### Running Locally
 
 ```bash
-npm run start
+$ npm run start
+$ curl http://localhost:3000/logs/OnDemandLogsApp_test.log?count=1&filter=.*
 ```
 
 #### Run Tests
 
 ```bash
-npm run test
+$ npm run test
 ```

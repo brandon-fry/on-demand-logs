@@ -19,7 +19,7 @@ paths:
           schema:
             type: integer
           required: false
-          description: Number of events to return
+          description: Number of events to return. Defaults to 10.
         - in: query
           name: filter
           schema:
